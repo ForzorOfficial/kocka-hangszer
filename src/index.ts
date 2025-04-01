@@ -186,29 +186,6 @@ async function handleMoveEvent(event: GanCubeEvent) {
   }
 }
 
-function checkIfM(event: GanCubeEvent, move: string) : string
-{
-
-  console.log(lastMoves);
-
-  if (lastMoves[lastMoves.length - 2] != null){
-    console.log("1");
-    if (lastMoves[lastMoves.length - 2].localTimestamp! - event.timestamp < 15) {
-      console.log("2");
-      console.log(lastMoves[lastMoves.length - 1].move);
-      console.log(move);
-      if (lastMoves[lastMoves.length - 1].move == "L" && move == "R'") { // Check if M'
-        console.log("3")
-
-        return ("M'");
-      }
-    }
-  }
-  
-
-  return(move);
-}
-
 var cubeStateInitialized = false;
 
 async function handleFaceletsEvent(event: GanCubeEvent) {
