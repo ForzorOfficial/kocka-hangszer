@@ -1,12 +1,15 @@
 {
-  "name": "gan-cube-sample",
+  "name": "kocka-hangszer",
+  "homepage": "https://ForzorOfficial.github.io/kocka-hangszer/",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "typescript": "^5.8.2",
