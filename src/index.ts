@@ -106,7 +106,7 @@ function playMoveSound(move: string ) {
       case 'B':
           soundFile = '/kocka-hangszer/sounds/a4.mp3';
           break;
-      case "M'":
+      case "M":
           soundFile = '/kocka-hangszer/sounds/b3.mp3';
           break;
       case "R'":
@@ -127,7 +127,7 @@ function playMoveSound(move: string ) {
       case "B'":
           soundFile = '/kocka-hangszer/sounds/a5.mp3';
           break;
-      case "M":
+      case "M'":
           soundFile = '/kocka-hangszer/sounds/b4.mp3';
           break;
       default:
@@ -225,7 +225,7 @@ function handleCubeEvent(event: GanCubeEvent) {
   } else if (event.type == "DISCONNECT") {
     twistyPlayer.alg = '';
     $('.info input').val('- n/a -');
-    $('#connect').html('Connect');
+    $('#connect').html('Csatlakozás');
   }
 }
 
@@ -259,7 +259,7 @@ $('#connect').on('click', async () => {
     await conn.sendCubeCommand({ type: "REQUEST_BATTERY" });
     $('#deviceName').val(conn.deviceName);
     $('#deviceMAC').val(conn.deviceMAC);
-    $('#connect').html('Disconnect');
+    $('#connect').html('Lecsatlakozás');
   }
 });
 
