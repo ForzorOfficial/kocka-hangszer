@@ -89,46 +89,46 @@ function playMoveSound(move: string ) {
 
   switch (move) {
       case 'R':
-          soundFile = '/sounds/c3.mp3';
+          soundFile = '/kocka-hangszer/sounds/c3.mp3';
           break;
       case 'L':
-          soundFile = '/sounds/d3.mp3';
+          soundFile = '/kocka-hangszer/sounds/d3.mp3';
           break;
       case 'U':
-          soundFile = '/sounds/e3.mp3';
+          soundFile = '/kocka-hangszer/sounds/e3.mp3';
           break;
       case 'D':
-          soundFile = '/sounds/f3.mp3';
+          soundFile = '/kocka-hangszer/sounds/f3.mp3';
           break;
       case 'F':
-          soundFile = '/sounds/g3.mp3';
+          soundFile = '/kocka-hangszer/sounds/g3.mp3';
           break;
       case 'B':
-          soundFile = '/sounds/a4.mp3';
+          soundFile = '/kocka-hangszer/sounds/a4.mp3';
           break;
       case "M'":
-          soundFile = '/sounds/b3.mp3';
+          soundFile = '/kocka-hangszer/sounds/b3.mp3';
           break;
       case "R'":
-          soundFile = '/sounds/c4.mp3';
+          soundFile = '/kocka-hangszer/sounds/c4.mp3';
           break;
       case "L'":
-          soundFile = '/sounds/d4.mp3';
+          soundFile = '/kocka-hangszer/sounds/d4.mp3';
           break;
       case "U'":
-          soundFile = '/sounds/e4.mp3';
+          soundFile = '/kocka-hangszer/sounds/e4.mp3';
           break;
       case "D'":
-          soundFile = '/sounds/f4.mp3';
+          soundFile = '/kocka-hangszer/sounds/f4.mp3';
           break;
       case "F'":
-          soundFile = '/sounds/g4.mp3';
+          soundFile = '/kocka-hangszer/sounds/g4.mp3';
           break;
       case "B'":
-          soundFile = '/sounds/a5.mp3';
+          soundFile = '/kocka-hangszer/sounds/a5.mp3';
           break;
       case "M":
-          soundFile = '/sounds/b4.mp3';
+          soundFile = '/kocka-hangszer/sounds/b4.mp3';
           break;
       default:
           console.warn('No sound assigned for move:', move);

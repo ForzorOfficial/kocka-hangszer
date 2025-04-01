@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="hu">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gan-cube-sample</title>
+  <title>Kocka hangszer</title>
 </head>
 
 <body>
@@ -12,56 +12,36 @@
   <div id="app">
 
     <div class="help">
-      Scramble cube to arbitrary state then press SPACE or touch Cube
-      to activate basic solving timer
+      Használat: <br> Kapcsold be a kockád, majd kattints a "Csatlakozás" gombra és kövesd a böngésződ utasításait. <br> Lehet, hogy többször is rá meg kell próbálj csatlakozz, hogy működjön. <br> Csak GAN i Carry kockával lett tesztelve.
     </div>
 
     <div id="cube"></div>
 
     <div class="controls">
-      <button id="connect">Connect</button>
-      <button id="reset-state">Reset State</button>
-      <button id="reset-gyro">Reset Gyro</button>
+      <button id="connect">Csatlakozás</button>
+      <button id="reset-state">Állapot visszaállítása</button>
     </div>
 
     <div class="info">
 
-      <label for="deviceName">Device Name</label>
+      <label for="deviceName">Eszköz név</label>
       <input id="deviceName" type="text" readonly value="- n/a -">
 
-      <label for="deviceMAC">Device MAC</label>
+      <label for="deviceMAC">Eszköz MAC cím</label>
       <input id="deviceMAC" type="text" readonly value="- n/a -">
 
-      <label for="hardwareName">Hardware Name</label>
-      <input id="hardwareName" type="text" readonly value="- n/a -">
-
-      <label for="hardwareVersion">Hardware Version</label>
-      <input id="hardwareVersion" type="text" readonly value="- n/a -">
-
-      <label for="softwareVersion">Software Version</label>
-      <input id="softwareVersion" type="text" readonly value="- n/a -">
-
-      <label for="productDate">Product Date</label>
-      <input id="productDate" type="text" readonly value="- n/a -">
-
-      <label for="gyroSupported">Gyro Supported</label>
-      <input id="gyroSupported" type="text" readonly value="- n/a -">
-
-      <label for="batteryLevel">Battery</label>
+      <label for="batteryLevel">Akkumulátor</label>
       <input id="batteryLevel" type="text" readonly value="- n/a -">
-
-      <label for="skew">Clock Skew</label>
-      <input id="skew" type="text" readonly value="- n/a -">
-
-      <label for="quaternion">Quaternion</label>
-      <input id="quaternion" type="text" readonly value="- n/a -">
-
-      <label for="velocity">Angular Velocity</label>
-      <input id="velocity" type="text" readonly value="- n/a -">
 
     </div>
 
-    <div id="timer">0:00.000</div>
+    <div class="sources">
+      <div class="controls">
+        <p>Források</p>
+        <button onclick="window.open('https://www.github.com/afedotov/gan-cube-sample', '_blank');">Eredeti projekt</button>
+        <button onclick="window.open('https://www.reddit.com/r/piano/comments/3u6ke7/heres_some_midi_and_mp3_files_for_individual/', '_blank');">Hangfájlok</button>
+       </div>
+    </div>
 
   </div>
   <script type="module" src="/src/index.ts"></script>
