@@ -2,10 +2,7 @@
 import './style.css'
 
 import $ from 'jquery';
-import { Subscription, interval } from 'rxjs';
 import { TwistyPlayer } from 'cubing/twisty';
-import { experimentalSolve3x3x3IgnoringCenters } from 'cubing/search';
-
 import * as THREE from 'three';
 
 import {
@@ -17,9 +14,6 @@ import {
   cubeTimestampCalcSkew,
 } from 'gan-web-bluetooth';
 
-import { faceletsToPattern, patternToFacelets } from './utils';
-
-const SOLVED_STATE = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
 
 var twistyPlayer = new TwistyPlayer({
   puzzle: '3x3x3',
@@ -47,7 +41,6 @@ var twistyVantage: any;
 let lastMove: string | null = null;
 let moveTimeout: number | null = null;
 
-const HOME_ORIENTATION = new THREE.Quaternion().setFromEuler(new THREE.Euler(15 * Math.PI / 180, -20 * Math.PI / 180, 0));
 var cubeQuaternion: THREE.Quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(30 * Math.PI / 180, -30 * Math.PI / 180, 0));
 
 async function amimateCubeOrientation() {
@@ -61,24 +54,6 @@ async function amimateCubeOrientation() {
   requestAnimationFrame(amimateCubeOrientation);
 }
 requestAnimationFrame(amimateCubeOrientation);
-
-var basis: THREE.Quaternion | null;
-
-async function handleGyroEvent(event: GanCubeEvent) {
-  if (event.type == "GYRO") {
-    let { x: qx, y: qy, z: qz, w: qw } = event.quaternion;
-    let quat = new THREE.Quaternion(qx, qz, -qy, qw).normalize();
-    if (!basis) {
-      basis = quat.clone().conjugate();
-    }
-    cubeQuaternion.copy(quat.premultiply(basis).premultiply(HOME_ORIENTATION));
-    $('#quaternion').val(`x: ${qx.toFixed(3)}, y: ${qy.toFixed(3)}, z: ${qz.toFixed(3)}, w: ${qw.toFixed(3)}`);
-    if (event.velocity) {
-      let { x: vx, y: vy, z: vz } = event.velocity;
-      $('#velocity').val(`x: ${vx}, y: ${vy}, z: ${vz}`);
-    }
-  }
-}
 
 function playMoveSound(move: string ) {
   let soundFile = '';
@@ -127,10 +102,8 @@ function playMoveSound(move: string ) {
           soundFile = '/kocka-hangszer/sounds/b4.mp3';
           break;
       default:
-          console.warn('No sound assigned for move:', move);
           return;
   }
-  console.log("Sound played: " + soundFile);
   const sound = new Audio(soundFile);
   sound.play().catch(error => console.error('Error playing audio:', error));
 }
@@ -173,40 +146,12 @@ async function handleMoveEvent(event: GanCubeEvent) {
   }
 }
 
-var cubeStateInitialized = false;
-
-async function handleFaceletsEvent(event: GanCubeEvent) {
-  if (event.type == "FACELETS" && !cubeStateInitialized) {
-    if (event.facelets != SOLVED_STATE) {
-      var kpattern = faceletsToPattern(event.facelets);
-      var solution = await experimentalSolve3x3x3IgnoringCenters(kpattern);
-      var scramble = solution.invert();
-      twistyPlayer.alg = scramble;
-    } else {
-      twistyPlayer.alg = '';
-    }
-    cubeStateInitialized = true;
-    console.log("Initial cube state is applied successfully", event.facelets);
-  }
-}
-
 function handleCubeEvent(event: GanCubeEvent) {
   if (event.type != "GYRO")
-    console.log("");
-    console.log("GanCubeEvent", event);
-
-  if (event.type == "GYRO") {
-    handleGyroEvent(event);
-  } else if (event.type == "MOVE") {
+   if (event.type == "MOVE") {
     handleMoveEvent(event);
-  } else if (event.type == "FACELETS") {
-    handleFaceletsEvent(event);
   } else if (event.type == "HARDWARE") {
     $('#hardwareName').val(event.hardwareName || '- n/a -');
-    $('#hardwareVersion').val(event.hardwareVersion || '- n/a -');
-    $('#softwareVersion').val(event.softwareVersion || '- n/a -');
-    $('#productDate').val(event.productDate || '- n/a -');
-    $('#gyroSupported').val(event.gyroSupported ? "YES" : "NO");
   } else if (event.type == "BATTERY") {
     $('#batteryLevel').val(event.batteryLevel + '%');
   } else if (event.type == "DISCONNECT") {
@@ -230,22 +175,24 @@ $('#reset-state').on('click', async () => {
   twistyPlayer.alg = '';
 });
 
-$('#reset-gyro').on('click', async () => {
-  basis = null;
-});
-
 $('#connect').on('click', async () => {
   if (conn) {
     conn.disconnect();
     conn = null;
+    $('#connect').html('Csatlakozás');
   } else {
-    conn = await connectGanCube(customMacAddressProvider);
-    conn.events$.subscribe(handleCubeEvent);
-    await conn.sendCubeCommand({ type: "REQUEST_HARDWARE" });
-    await conn.sendCubeCommand({ type: "REQUEST_FACELETS" });
-    await conn.sendCubeCommand({ type: "REQUEST_BATTERY" });
-    $('#deviceName').val(conn.deviceName);
-    $('#deviceMAC').val(conn.deviceMAC);
-    $('#connect').html('Lecsatlakozás');
+    try {
+      conn = await connectGanCube(customMacAddressProvider);
+      conn.events$.subscribe(handleCubeEvent);
+      await conn.sendCubeCommand({ type: "REQUEST_HARDWARE" });
+      await conn.sendCubeCommand({ type: "REQUEST_FACELETS" });
+      await conn.sendCubeCommand({ type: "REQUEST_BATTERY" });
+      $('#deviceName').val(conn.deviceName);
+      $('#deviceMAC').val(conn.deviceMAC);
+      $('#connect').html('Lecsatlakozás');
+    } catch (error) {
+      console.error("Connection attempt failed", error);
+      alert("Sikertelen csatlakozás! Próbáld újra.");
+    }
   }
 });
