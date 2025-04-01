@@ -9,15 +9,12 @@ import { experimentalSolve3x3x3IgnoringCenters } from 'cubing/search';
 import * as THREE from 'three';
 
 import {
-  now,
   connectGanCube,
   GanCubeConnection,
   GanCubeEvent,
   GanCubeMove,
   MacAddressProvider,
-  makeTimeFromTimestamp,
   cubeTimestampCalcSkew,
-  cubeTimestampLinearFit
 } from 'gan-web-bluetooth';
 
 import { faceletsToPattern, patternToFacelets } from './utils';
@@ -43,7 +40,6 @@ $('#cube').append(twistyPlayer);
 
 var conn: GanCubeConnection | null;
 var lastMoves: GanCubeMove[] = [];
-var solutionMoves: GanCubeMove[] = [];
 
 var twistyScene: THREE.Scene;
 var twistyVantage: any;
@@ -141,12 +137,6 @@ function playMoveSound(move: string ) {
 
 async function handleMoveEvent(event: GanCubeEvent) {
   if (event.type == "MOVE") {
-    if (timerState == "READY") {
-      setTimerState("RUNNING");
-    }
-    console.log(event.move);
-
-    // Clear previous timeout if another move comes quickly
     if (moveTimeout) {
       clearTimeout(moveTimeout);
       moveTimeout = null;
@@ -155,27 +145,24 @@ async function handleMoveEvent(event: GanCubeEvent) {
  if (lastMove === "L" && event.move === "R'") {
         console.log("Detected L -> R' sequence, playing M'");
         playMoveSound("M'");
-        lastMove = null; // Reset
+        lastMove = null;
     }
     else if (lastMove === "R" && event.move === "L'") {
       console.log("Detected R -> L' sequence, playing M");
       playMoveSound("M");
-      lastMove = null; // Reset
+      lastMove = null;
     }
     else {
         lastMove = event.move;
         moveTimeout = setTimeout(() => {
             playMoveSound(event.move);
             lastMove = null;
-        }, 100); // Short delay to check for next move
+        }, 90);
     }
   
-
     twistyPlayer.experimentalAddMove(event.move, { cancel: false });
     lastMoves.push(event);
-    if (timerState == "RUNNING") {
-      solutionMoves.push(event);
-    }
+
     if (lastMoves.length > 256) {
       lastMoves = lastMoves.slice(-256);
     }
@@ -231,7 +218,7 @@ function handleCubeEvent(event: GanCubeEvent) {
 
 const customMacAddressProvider: MacAddressProvider = async (device, isFallbackCall): Promise<string | null> => {
   if (isFallbackCall) {
-    return prompt('Unable do determine cube MAC address!\nPlease enter MAC address manually:');
+    return prompt('A kocka MAC címének felfedése sikertelen volt!\nKérlek add meg a kocka MAC címet manuálisan:');
   } else {
     return typeof device.watchAdvertisements == 'function' ? null :
       prompt('Seems like your browser does not support Web Bluetooth watchAdvertisements() API. Enable following flag in Chrome:\n\nchrome://flags/#enable-experimental-web-platform-features\n\nor enter cube MAC address manually:');
@@ -261,80 +248,4 @@ $('#connect').on('click', async () => {
     $('#deviceMAC').val(conn.deviceMAC);
     $('#connect').html('Lecsatlakozás');
   }
-});
-
-var timerState: "IDLE" | "READY" | "RUNNING" | "STOPPED" = "IDLE";
-
-function setTimerState(state: typeof timerState) {
-  timerState = state;
-  switch (state) {
-    case "IDLE":
-      stopLocalTimer();
-      $('#timer').hide();
-      break;
-    case 'READY':
-      setTimerValue(0);
-      $('#timer').show();
-      $('#timer').css('color', '#0f0');
-      break;
-    case 'RUNNING':
-      solutionMoves = [];
-      startLocalTimer();
-      $('#timer').css('color', '#999');
-      break;
-    case 'STOPPED':
-      stopLocalTimer();
-      $('#timer').css('color', '#fff');
-      var fittedMoves = cubeTimestampLinearFit(solutionMoves);
-      var lastMove = fittedMoves.slice(-1).pop();
-      setTimerValue(lastMove ? lastMove.cubeTimestamp! : 0);
-      break;
-  }
-}
-
-twistyPlayer.experimentalModel.currentPattern.addFreshListener(async (kpattern) => {
-  var facelets = patternToFacelets(kpattern);
-  if (facelets == SOLVED_STATE) {
-    if (timerState == "RUNNING") {
-      setTimerState("STOPPED");
-    }
-    twistyPlayer.alg = '';
-  }
-});
-
-function setTimerValue(timestamp: number) {
-  let t = makeTimeFromTimestamp(timestamp);
-  $('#timer').html(`${t.minutes}:${t.seconds.toString(10).padStart(2, '0')}.${t.milliseconds.toString(10).padStart(3, '0')}`);
-}
-
-var localTimer: Subscription | null = null;
-function startLocalTimer() {
-  var startTime = now();
-  localTimer = interval(30).subscribe(() => {
-    setTimerValue(now() - startTime);
-  });
-}
-
-function stopLocalTimer() {
-  localTimer?.unsubscribe();
-  localTimer = null;
-}
-
-function activateTimer() {
-  if (timerState == "IDLE" && conn) {
-    setTimerState("READY");
-  } else {
-    setTimerState("IDLE");
-  }
-}
-
-$(document).on('keydown', (event) => {
-  if (event.which == 32) {
-    event.preventDefault();
-    activateTimer();
-  }
-});
-
-$("#cube").on('touchstart', () => {
-  activateTimer();
 });
