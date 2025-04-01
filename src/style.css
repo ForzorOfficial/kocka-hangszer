@@ -105,3 +105,36 @@ body {
   font-size: 0.8em;
   font-weight: bold;
 }
+
+
+.note-table {
+  margin-bottom: 20px;
+  h3 {
+    margin: 0;
+    padding: 0;
+    color: #fff;
+  }
+
+  p {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+
+  table {
+    width: 25%;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  th {
+    background-color: #f4f4f4;
+  }
+  tr:nth-child(even) {
+    background-color: #d5d5d5;
+  }
+}
